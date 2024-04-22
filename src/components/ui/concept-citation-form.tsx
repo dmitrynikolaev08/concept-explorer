@@ -23,6 +23,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { Copy, Loader2 } from 'lucide-react';
+import { marked } from 'marked';
 
 const FormSchema = z.object({
   conceptName: z.string().min(1, 'Please enter a concept name'),
@@ -32,6 +35,10 @@ const FormSchema = z.object({
 export function ConceptCitationForm() {
   const { toast } = useToast();
 
+  const [explanation, setExplanation] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [plainTextExplanation, setPlainTextExplanation] = useState('');
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -39,7 +46,28 @@ export function ConceptCitationForm() {
     },
   });
 
+  const copyToClipboard = async () => {
+    if (!plainTextExplanation) return;
+
+    try {
+      await navigator.clipboard.writeText(plainTextExplanation);
+      toast({
+        title: 'Copied',
+        description: 'The explanation has been copied to your clipboard.',
+      });
+    } catch (error) {
+      console.error('Failed to copy text:', error);
+      toast({
+        title: 'Failed to Copy',
+        description: 'Could not copy the text. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
+    setExplanation('');
     try {
       const response = await fetch('/api/explain', {
         method: 'POST',
@@ -66,15 +94,12 @@ export function ConceptCitationForm() {
         });
         return;
       }
-      toast({
-        title: 'Explanation Received',
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{result.reply}</code>
-          </pre>
-        ),
-      });
+      setPlainTextExplanation(result.reply);
+      const reply = await marked(result.reply);
+      setExplanation(reply);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.error('Error fetching explanation:', error);
       toast({
         title: 'Error Fetching Explanation',
@@ -91,6 +116,11 @@ export function ConceptCitationForm() {
       description: 'There was an error submitting the form.',
       variant: 'destructive',
     });
+  }
+
+  function handleReset() {
+    form.reset();
+    setExplanation('');
   }
 
   return (
@@ -121,7 +151,7 @@ export function ConceptCitationForm() {
               name="includeCitations"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <FormLabel>Include Citations</FormLabel>
+                  <FormLabel>Include citations</FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}
@@ -131,15 +161,51 @@ export function ConceptCitationForm() {
                 </FormItem>
               )}
             />
-            <CardFooter className="flex justify-between">
-              <Button variant="outline" type="reset">
-                Reset
-              </Button>
-              <Button type="submit">Submit</Button>
-            </CardFooter>
+            {!explanation && (
+              <div className="flex justify-center">
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please
+                      wait...{' '}
+                    </>
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
+        {explanation && (
+          <div className="mt-6">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle>Explanation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="prose"
+                  dangerouslySetInnerHTML={{ __html: explanation }}
+                />
+                <div className="flex justify-end mt-3">
+                  <Button onClick={copyToClipboard} className="ml-auto">
+                    <Copy className="mr-2 h-3 w-3" />
+                    Copy text
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </CardContent>
+      {explanation && (
+        <CardFooter className="flex justify-center">
+          <Button variant="outline" type="reset" onReset={handleReset}>
+            Reset
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
