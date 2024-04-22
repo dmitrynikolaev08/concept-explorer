@@ -15,21 +15,30 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Copy, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Copy, Loader2 } from 'lucide-react';
 import { marked } from 'marked';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const FormSchema = z.object({
   conceptName: z.string().min(1, 'Please enter a concept name'),
   includeCitations: z.boolean(),
+  targetLanguage: z.string().min(1, 'Please select a target language'),
 });
 
 export function ConceptCitationForm() {
@@ -126,7 +135,7 @@ export function ConceptCitationForm() {
   return (
     <Card className="w-full max-w-[600px]">
       <CardHeader>
-        <CardTitle>Concept Explanation Form</CardTitle>
+        <CardTitle>Concept Explanation</CardTitle>
         <CardDescription>
           Enter a concept name and specify if you want citations from academic
           papers.
@@ -138,14 +147,49 @@ export function ConceptCitationForm() {
             onSubmit={form.handleSubmit(onSubmit, onError)}
             className="grid gap-6"
           >
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="conceptName">Concept Name</Label>
-              <Input
-                id="conceptName"
-                placeholder="e.g., Polymorphism"
-                {...form.register('conceptName')}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="conceptName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Concept Name</FormLabel>
+                  <Input placeholder="e.g., Polymorphism" {...field} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="targetLanguage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Target language</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select the language" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="english">English (default)</SelectItem>
+                      <SelectItem value="spanish">Spanish</SelectItem>
+                      <SelectItem value="french">French</SelectItem>
+                      <SelectItem value="german">German</SelectItem>
+                      <SelectItem value="italian">Italian</SelectItem>
+                      <SelectItem value="czech">Czech</SelectItem>
+                      <SelectItem value="russian">Russian</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Select the language in which you want to get the explanation
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="includeCitations"
@@ -170,7 +214,10 @@ export function ConceptCitationForm() {
                       wait...{' '}
                     </>
                   ) : (
-                    'Submit'
+                    <>
+                      <ArrowUpRight className="mr-2 h-4 w-4" />
+                      Submit
+                    </>
                   )}
                 </Button>
               </div>
