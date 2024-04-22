@@ -201,7 +201,7 @@ export function ConceptCitationForm() {
       </CardContent>
       {explanation && (
         <CardFooter className="flex justify-center">
-          <Button variant="outline" type="reset" onReset={handleReset}>
+          <Button variant="outline" type="reset" onClick={handleReset}>
             Reset
           </Button>
         </CardFooter>
