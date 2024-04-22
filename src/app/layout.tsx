@@ -5,6 +5,7 @@ import '../styles/globals.css';
 // import MainNav from '@/components/main-nav';
 import SiteFooter from '@/components/site-footer';
 import { Toaster } from '@/components/ui/toaster';
+import { SiteHeader } from '@/components/site-header';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/*<MainNav />*/}
+        <SiteHeader />
         {children}
         <Toaster />
         <SiteFooter />
