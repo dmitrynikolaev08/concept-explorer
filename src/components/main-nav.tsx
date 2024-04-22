@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
+import { SignedIn, UserButton } from '@clerk/nextjs';
 
 export function MainNav() {
   const pathname = usePathname();
@@ -37,6 +38,9 @@ export function MainNav() {
         >
           GitHub
         </Link>
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
       </nav>
     </div>
   );

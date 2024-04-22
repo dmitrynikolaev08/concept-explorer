@@ -6,6 +6,7 @@ import '../styles/globals.css';
 import SiteFooter from '@/components/site-footer';
 import { Toaster } from '@/components/ui/toaster';
 import { SiteHeader } from '@/components/site-header';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,13 +21,15 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <SiteHeader />
-        {children}
-        <Toaster />
-        <SiteFooter />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <SiteHeader />
+          {children}
+          <Toaster />
+          <SiteFooter />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
