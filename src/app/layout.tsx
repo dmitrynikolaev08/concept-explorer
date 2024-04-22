@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 // import MainNav from '@/components/main-nav';
-import MainFooter from '@/components/main-footer';
+import SiteFooter from '@/components/site-footer';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,7 +23,8 @@ export default function RootLayout({
       <body className={inter.className}>
         {/*<MainNav />*/}
         {children}
-        <MainFooter />
+        <Toaster />
+        <SiteFooter />
       </body>
     </html>
   );
