@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { SignedIn, SignedOut, SignOutButton } from '@clerk/nextjs';
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
@@ -61,6 +62,42 @@ export function MobileNav() {
           <Icons.logo className="mr-2 h-4 w-4" />
           <span className="font-bold">{siteConfig.name}</span>
         </MobileLink>
+        <div className="mt-8 flex flex-col">
+          <MobileLink
+            href="/about"
+            onOpenChange={setOpen}
+            className="text-muted-foreground"
+          >
+            About
+          </MobileLink>
+          <MobileLink
+            href={siteConfig.links.github}
+            onOpenChange={setOpen}
+            className="mt-2 text-muted-foreground"
+          >
+            GitHub
+          </MobileLink>
+          <SignedOut>
+            <MobileLink
+              href="/sign-in"
+              onOpenChange={setOpen}
+              className="mt-6 text-muted-foreground"
+            >
+              Sign in
+            </MobileLink>
+          </SignedOut>
+          <SignedIn>
+            <SignOutButton>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="mt-6 text-muted-foreground flex items-center justify-start"
+              >
+                Sign out
+              </button>
+            </SignOutButton>
+          </SignedIn>
+        </div>
       </SheetContent>
     </Sheet>
   );
