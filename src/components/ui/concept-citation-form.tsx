@@ -74,6 +74,53 @@ export function ConceptCitationForm() {
     }
   };
 
+  async function getTranslation(
+    conceptExplanation: string,
+    targetLanguage: string
+  ) {
+    setIsLoading(true);
+    setExplanation('');
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ conceptExplanation, targetLanguage }),
+      });
+      if (!response.ok) {
+        toast({
+          title: 'Error Fetching Translation',
+          description: 'Failed to fetch translation from OpenAI.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      const result = await response.json();
+      if (result.error) {
+        console.error('Error fetching translation:', result.error);
+        toast({
+          title: 'Error Fetching Translation',
+          description: 'Failed to fetch translation from OpenAI.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      setPlainTextExplanation(result.reply);
+      const reply = await marked(result.reply);
+      setExplanation(reply);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Error fetching translation:', error);
+      toast({
+        title: 'Error Fetching Translation',
+        description: 'Failed to fetch translation from OpenAI.',
+        variant: 'destructive',
+      });
+    }
+  }
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     setExplanation('');
@@ -103,10 +150,7 @@ export function ConceptCitationForm() {
         });
         return;
       }
-      setPlainTextExplanation(result.reply);
-      const reply = await marked(result.reply);
-      setExplanation(reply);
-      setIsLoading(false);
+      getTranslation(result.reply, data.targetLanguage);
     } catch (error) {
       setIsLoading(false);
       console.error('Error fetching explanation:', error);

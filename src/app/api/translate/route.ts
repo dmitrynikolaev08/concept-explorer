@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const POST = async (request: Request) => {
-  const { conceptName, includeCitations } = await request.json();
+  const { conceptExplanation, targetLanguage } = await request.json();
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -16,11 +16,11 @@ export const POST = async (request: Request) => {
           {
             role: 'system',
             content:
-              'You are a knowledgeable assistant that provides quality information.',
+              'You are a knowledgeable assistant who is able to translate complex concepts to whatever language you desire.',
           },
           {
             role: 'user',
-            content: `Explain the concept in-depth using markdown: ${conceptName} ${includeCitations ? 'with academic citations. Please include the references.' : ''}`,
+            content: `Translate the following explanation to ${targetLanguage}: ${conceptExplanation} keeping the original meaning intact. Also, please ensure that the translation is accurate and coherent. Please use markdown for the explanation.`,
           },
         ],
       }),
