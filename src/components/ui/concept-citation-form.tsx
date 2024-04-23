@@ -171,7 +171,7 @@ export function ConceptCitationForm() {
         setLoadingStep(0);
         return;
       }
-      getTranslation(result.reply, data.targetLanguage);
+      await getTranslation(result.reply, data.targetLanguage);
     } catch (error) {
       setIsLoading(false);
       setLoadingStep(0);
@@ -194,8 +194,13 @@ export function ConceptCitationForm() {
   }
 
   function handleReset() {
-    form.reset();
+    form.reset({
+      conceptName: '',
+      includeCitations: false,
+    });
+    form.setValue('targetLanguage', 'english');
     setExplanation('');
+    setPlainTextExplanation('');
   }
 
   return (
