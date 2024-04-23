@@ -96,6 +96,8 @@ export function ConceptCitationForm() {
           description: 'Failed to fetch translation from OpenAI.',
           variant: 'destructive',
         });
+        setIsLoading(false);
+        setLoadingStep(0);
         return;
       }
       const result = await response.json();
@@ -106,6 +108,8 @@ export function ConceptCitationForm() {
           description: 'Failed to fetch translation from OpenAI.',
           variant: 'destructive',
         });
+        setIsLoading(false);
+        setLoadingStep(0);
         return;
       }
       setPlainTextExplanation(result.reply);
@@ -143,6 +147,8 @@ export function ConceptCitationForm() {
           description: 'Failed to fetch explanation from OpenAI.',
           variant: 'destructive',
         });
+        setIsLoading(false);
+        setLoadingStep(0);
         return;
       }
       const result = await response.json();
@@ -153,6 +159,8 @@ export function ConceptCitationForm() {
           description: 'Failed to fetch explanation from OpenAI.',
           variant: 'destructive',
         });
+        setIsLoading(false);
+        setLoadingStep(0);
         return;
       }
       if (data.targetLanguage === 'english') {
