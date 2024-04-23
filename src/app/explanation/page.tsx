@@ -17,7 +17,7 @@ export default async function ExplanationPage() {
           <div className="z-10 w-full items-center justify-center text-sm lg:flex">
             <div className="flex flex-col items-center justify-center w-full">
               <h1 className="text-3xl font-semibold text-black mb-4 md:mb-8">
-                👋 Hi, {user.firstName || `Stranger`}
+                👋 Hello, {user.firstName || `Stranger`}
               </h1>
               <ConceptCitationForm />
             </div>
