@@ -46,6 +46,7 @@ export function ConceptCitationForm() {
 
   const [explanation, setExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [plainTextExplanation, setPlainTextExplanation] = useState('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -74,8 +75,59 @@ export function ConceptCitationForm() {
     }
   };
 
+  async function getTranslation(
+    conceptExplanation: string,
+    targetLanguage: string
+  ) {
+    setIsLoading(true);
+    setLoadingStep(2);
+    setExplanation('');
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ conceptExplanation, targetLanguage }),
+      });
+      if (!response.ok) {
+        toast({
+          title: 'Error Fetching Translation',
+          description: 'Failed to fetch translation from OpenAI.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      const result = await response.json();
+      if (result.error) {
+        console.error('Error fetching translation:', result.error);
+        toast({
+          title: 'Error Fetching Translation',
+          description: 'Failed to fetch translation from OpenAI.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      setPlainTextExplanation(result.reply);
+      const reply = await marked(result.reply);
+      setExplanation(reply);
+      setIsLoading(false);
+      setLoadingStep(0);
+    } catch (error) {
+      setIsLoading(false);
+      setLoadingStep(0);
+      console.error('Error fetching translation:', error);
+      toast({
+        title: 'Error Fetching Translation',
+        description: 'Failed to fetch translation from OpenAI.',
+        variant: 'destructive',
+      });
+    }
+  }
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
+    setLoadingStep(1);
     setExplanation('');
     try {
       const response = await fetch('/api/explain', {
@@ -103,12 +155,18 @@ export function ConceptCitationForm() {
         });
         return;
       }
-      setPlainTextExplanation(result.reply);
-      const reply = await marked(result.reply);
-      setExplanation(reply);
-      setIsLoading(false);
+      if (data.targetLanguage === 'english') {
+        setPlainTextExplanation(result.reply);
+        const reply = await marked(result.reply);
+        setExplanation(reply);
+        setIsLoading(false);
+        setLoadingStep(0);
+        return;
+      }
+      getTranslation(result.reply, data.targetLanguage);
     } catch (error) {
       setIsLoading(false);
+      setLoadingStep(0);
       console.error('Error fetching explanation:', error);
       toast({
         title: 'Error Fetching Explanation',
@@ -224,6 +282,30 @@ export function ConceptCitationForm() {
             )}
           </form>
         </Form>
+        {loadingStep > 0 && (
+          <div className="mt-6">
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle className="text-center">
+                  Step {loadingStep}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col justify-center items-center">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                {loadingStep === 1 && (
+                  <p className="mt-4">
+                    Getting the explanation for your concept...
+                  </p>
+                )}
+                {loadingStep === 2 && (
+                  <p className="mt-4">
+                    Translating it to your desired language...
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {explanation && (
           <div className="mt-6">
             <Card className="w-full">
