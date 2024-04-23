@@ -20,7 +20,7 @@ export const POST = async (request: Request) => {
           },
           {
             role: 'user',
-            content: `Explain the concept in-depth using markdown: ${conceptName} ${includeCitations ? 'with academic citations. Please include the references.' : ''}`,
+            content: `Explain the concept in-depth using markdown: ${conceptName} ${includeCitations ? 'with academic citations. Please include the references to the end.' : ''}`,
           },
         ],
       }),
