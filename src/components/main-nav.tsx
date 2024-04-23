@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export function MainNav() {
   const pathname = usePathname();
@@ -37,6 +38,20 @@ export function MainNav() {
         >
           GitHub
         </Link>
+        <SignedOut>
+          <Link
+            href="/sign-in"
+            className={cn(
+              'transition-colors hover:text-foreground/80',
+              pathname === '/sign-in' ? 'text-foreground' : 'text-foreground/60'
+            )}
+          >
+            Sign in
+          </Link>
+        </SignedOut>
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
       </nav>
     </div>
   );
