@@ -10,6 +10,7 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SignedIn, SignedOut, SignOutButton } from '@clerk/nextjs';
+import { CircleHelp, Github, LogIn, LogOut } from 'lucide-react';
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
@@ -62,20 +63,26 @@ export function MobileNav() {
           <Icons.logo className="mr-2 h-4 w-4" />
           <span className="font-bold">{siteConfig.name}</span>
         </MobileLink>
-        <div className="mt-8 flex flex-col">
+        <div className="mt-8 flex flex-col h-full">
           <MobileLink
             href="/about"
             onOpenChange={setOpen}
             className="text-muted-foreground"
           >
-            About
+            <div className="flex items-center">
+              <CircleHelp className="mr-1.5 h-4 w-4" />
+              About
+            </div>
           </MobileLink>
           <MobileLink
             href={siteConfig.links.github}
             onOpenChange={setOpen}
             className="mt-2 text-muted-foreground"
           >
-            GitHub
+            <div className="flex items-center">
+              <Github className="mr-1.5 h-4 w-4" />
+              GitHub
+            </div>
           </MobileLink>
           <SignedOut>
             <MobileLink
@@ -83,7 +90,10 @@ export function MobileNav() {
               onOpenChange={setOpen}
               className="mt-6 text-muted-foreground"
             >
-              Sign in
+              <div className="flex items-center">
+                <LogIn className="mr-1.5 h-4 w-4" />
+                Sign in
+              </div>
             </MobileLink>
           </SignedOut>
           <SignedIn>
@@ -91,9 +101,12 @@ export function MobileNav() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="mt-6 text-muted-foreground flex items-center justify-start"
+                className="mt-auto mb-20 text-muted-foreground flex items-center justify-start"
               >
-                Sign out
+                <div className="flex items-center">
+                  <LogOut className="mr-1.5 h-4 w-4" />
+                  Sign out
+                </div>
               </button>
             </SignOutButton>
           </SignedIn>
